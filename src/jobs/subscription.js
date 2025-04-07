@@ -42,7 +42,7 @@ cron.schedule("0 0 * * *", async () => {
 
     const expiredSub = await Subscription.find({
       status: "expiring",
-      endTime: { $lte: now.toDate() },
+      expiryDate: { $lte: now.toDate() },
     });
 
     for (const exp of expiredSub) {

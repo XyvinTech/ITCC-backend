@@ -25,9 +25,7 @@ exports.createEventSchema = Joi.object({
   eventDate: Joi.date().required(),
   eventEndDate: Joi.date(),
   startDate: Joi.date().required(),
-  startTime: Joi.date().required(),
   endDate: Joi.date().required(),
-  endTime: Joi.date().required(),
   limit: Joi.number().required(),
   platform: Joi.string(),
   link: Joi.string(),
@@ -55,9 +53,7 @@ exports.editEventSchema = Joi.object({
   image: Joi.string(),
   eventDate: Joi.date(),
   startDate: Joi.date(),
-  startTime: Joi.date(),
   endDate: Joi.date(),
-  endTime: Joi.date(),
   platform: Joi.string(),
   link: Joi.string(),
   limit: Joi.number(),
@@ -210,21 +206,6 @@ exports.createZoneSchema = Joi.object({
 exports.editZoneSchema = Joi.object({
   name: Joi.string(),
   stateId: Joi.string(),
-  admins: Joi.array(),
-});
-
-exports.createMemberSchema = Joi.object({
-  name: Joi.string(),
-  //memberId: Joi.string(),
-  chapterId: Joi.string(),
-  subscription: Joi.string(),
-  role: Joi.string(),
-});
-
-exports.editMemberSchema = Joi.object({
-  name: Joi.string(),
-  chapterId: Joi.string(),
-  subscription: Joi.string(),
   admins: Joi.array(),
 });
 
@@ -458,27 +439,6 @@ exports.createAnalyticSchema = Joi.object({
   meetingLink: Joi.string(),
   location: Joi.string(),
   status: Joi.string(),
-});
-
-exports.createMemberSchema = Joi.object({
-  name: Joi.string().required(),
-  bloodgroup: Joi.string(),
-  image: Joi.string(),
-  email: Joi.string().email().required(),
-  phone: Joi.string().trim().required(),
-  bio: Joi.string(),
-  status: Joi.string(),
-  address: Joi.string(),
-  businessCatogary: Joi.string(),
-  businessSubCatogary: Joi.string(),
-  chapter: Joi.string().required(),
-  company: Joi.object({
-    name: Joi.string(),
-    designation: Joi.string(),
-    email: Joi.string().email(),
-    websites: Joi.string(),
-    phone: Joi.string(),
-  }),
 });
 
 exports.createSubscriptionSchema = Joi.object({

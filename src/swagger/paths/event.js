@@ -41,19 +41,11 @@
  *                 format: date
  *                 description: The start date of the event
  *                 example: "2024-08-29"
- *               startTime:
- *                 type: string
- *                 format: date
- *                 example: "2024-09-01T09:00:00Z"
  *               endDate:
  *                 type: string
  *                 format: date
  *                 description: The end date of the event
  *                 example: "2024-08-30"
- *               endTime:
- *                 type: string
- *                 format: date
- *                 example: "2024-09-02T17:00:00Z"
  *               platform:
  *                 type: string
  *                 description: The platform where the event will be held
@@ -175,21 +167,11 @@
  *                 format: date
  *                 description: The start date of the event
  *                 example: "2024-08-29"
- *               startTime:
- *                 type: string
- *                 format: time
- *                 description: The start time of the event in HH:MM format
- *                 example: "14:30"
  *               endDate:
  *                 type: string
  *                 format: date
  *                 description: The end date of the event
  *                 example: "2024-08-30"
- *               endTime:
- *                 type: string
- *                 format: time
- *                 description: The end time of the event in HH:MM format
- *                 example: "16:00"
  *               platform:
  *                 type: string
  *                 description: The platform where the event will be held
