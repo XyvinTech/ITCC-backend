@@ -1,15 +1,5 @@
 const Joi = require("joi");
 
-const linkSchema = Joi.object({
-  name: Joi.string().required(),
-  link: Joi.string().uri().required(),
-});
-
-// exports.createFeedsSchema = Joi.object({
-//   media: Joi.string(),
-//   content: Joi.string().required(),
-// });
-
 exports.createFeedsSchema = Joi.object({
   type: Joi.string().allow(""),
   media: Joi.string(),
@@ -404,7 +394,7 @@ exports.updateUserSchema = Joi.object({
       link: Joi.string(),
     })
   ),
-  fcm: Joi.string().allow(''),
+  fcm: Joi.string().allow(""),
 });
 
 exports.createReviewSchema = Joi.object({
