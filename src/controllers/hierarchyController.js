@@ -5,7 +5,6 @@ const checkAccess = require("../helpers/checkAccess");
 const District = require("../models/districtModel");
 const Zone = require("../models/zoneModel");
 const Chapter = require("../models/chapterModel");
-const Member = require("../models/memberModel");
 const User = require("../models/userModel");
 const { isUserAdmin } = require("../utils/adminCheck");
 
