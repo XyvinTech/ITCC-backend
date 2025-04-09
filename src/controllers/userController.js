@@ -811,10 +811,17 @@ exports.loginUser = async (req, res) => {
       .then(async (decodedToken) => {
         user = await User.findOne({ phone: decodedToken.phone_number });
         if (!user) {
+          const newUser = await User.create({
+            uid: decodedToken.uid,
+            phone: decodedToken.phone_number,
+            fcm,
+          });
+          const token = generateToken(newUser._id);
           return responseHandler(
             res,
-            400,
-            "User with this phone number does not exist"
+            200,
+            "User logged in successfully",
+            token
           );
         } else if (user.uid && user.uid !== null) {
           user.fcm = fcm;
