@@ -927,22 +927,17 @@ exports.approveUser = async (req, res) => {
 
     let message;
 
-    if (status === "awaiting_payment") {
+    if (status === "active") {
       message = {
         notification: {
-          title: `HEF Membership has been approved`,
-          body: `Your membership for HEF has been approved successfully. Please complete the payment process to continue.`,
+          title: `ITCC Membership has been approved`,
+          body: `Your membership for ITCC has been approved successfully.`,
         },
         token: findUser.fcm,
       };
-    } else {
-      message = {
-        notification: {
-          title: `HEF Membership has been rejected`,
-          body: `Your membership for HEF has been rejected, because of ${req.body.reason}.`,
-        },
-        token: findUser.fcm,
-      };
+      const today = new Date();
+      findUser.freeTrialEndDate = new Date(today.setDate(today.getDate() + 30));
+      await findUser.save();
     }
 
     getMessaging()
