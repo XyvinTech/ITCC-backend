@@ -503,6 +503,8 @@ exports.getAllUsers = async (req, res) => {
     }
     if (status) {
       filter.status = status;
+    } else {
+      filter.status = { $ne: "inactive" };
     }
 
     if (name && name !== "") {
@@ -865,33 +867,25 @@ exports.getVersion = async (req, res) => {
 
 exports.getApprovals = async (req, res) => {
   try {
-    const { userId } = req;
-    const findUser = await User.findById(userId);
-    if (!findUser) {
-      return responseHandler(res, 404, "User not found");
-    }
-
-    if (findUser.role === "member") {
-      return responseHandler(
-        res,
-        403,
-        "You don't have permission to perform this action"
-      );
-    }
     const { pageNo = 1, limit = 10 } = req.query;
     const skipCount = 10 * (pageNo - 1);
     const filter = { status: "inactive" };
     const totalCount = await User.countDocuments(filter);
-    const data = await User.find(filter)
-      .skip(skipCount)
+    const data = await User.find(filter).populate("chapter","name").skip(skipCount)
       .limit(limit)
       .sort({ createdAt: -1, _id: 1 })
       .lean();
+    const mappedData = data.map((user) => {
+      return {
+        ...user,
+        chapterName: user?.chapter?.name,
+      };
+    });
     return responseHandler(
       res,
       200,
       `Approvals found successfull..!`,
-      data,
+      mappedData,
       totalCount
     );
   } catch (error) {
@@ -901,19 +895,6 @@ exports.getApprovals = async (req, res) => {
 
 exports.approveUser = async (req, res) => {
   try {
-    const { userId } = req;
-    const fetchUser = await User.findById(userId);
-    if (!fetchUser) {
-      return responseHandler(res, 404, "User not found");
-    }
-
-    if (fetchUser.role === "member") {
-      return responseHandler(
-        res,
-        403,
-        "You don't have permission to perform this action"
-      );
-    }
     const { id } = req.params;
     const { status } = req.body;
     if (!id) {
