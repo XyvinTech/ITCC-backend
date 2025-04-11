@@ -864,7 +864,6 @@ exports.getVersion = async (req, res) => {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
 };
-
 exports.getApprovals = async (req, res) => {
   try {
     const { pageNo = 1, limit = 10 } = req.query;
