@@ -11,6 +11,13 @@ const {
 } = require("../validations/index");
 const ParentSub = require("../models/parentSubModel");
 const sendInAppNotification = require("../utils/sendInAppNotification");
+const Razorpay = require("razorpay");
+const Razorpayment = require("../models/razorpayModel");
+const instance = new Razorpay({
+  key_id: process.env.RAZORPAY_ID_KEY,
+  key_secret: process.env.RAZORPAY_SECRET_KEY,
+});
+const crypto = require("crypto");
 
 exports.updatePayment = async (req, res) => {
   try {
@@ -386,5 +393,119 @@ exports.getSingleParentSubscription = async (req, res) => {
     }
   } catch (error) {
     return responseHandler(res, 500, "Internal Server Error", error.message);
+  }
+};
+
+exports.makePayment = async (req, res) => {
+  try {
+    const { userId } = req;
+    const dateRandom = new Date().getTime();
+    const { amount, category } = req.body;
+
+    const options = {
+      amount: amount * 100,
+      currency: "INR",
+      receipt: `order_id${dateRandom}`,
+    };
+    instance.orders.create(options, async function (err, order) {
+      if (order) {
+        const paymentData = {
+          user: userId,
+          gatewayId: order.id,
+          entity: order.entity,
+          amount: order.amount / 100,
+          amountDue: order.amount_due / 100,
+          amountPaid: order.amount_paid,
+          currency: order.currency,
+          status: order.status,
+          receipt: order.receipt,
+          attempts: order.attempts,
+          category: category,
+        };
+        const newPayment = await Razorpayment.create(paymentData);
+        return responseHandler(
+          res,
+          200,
+          "Payment created successfully",
+          newPayment
+        );
+      } else if (err) {
+        return responseHandler(
+          res,
+          500,
+          `Payment creation failed: ${err.message}`
+        );
+      }
+    });
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
+  }
+};
+
+exports.razorpayCallback = async (req, res) => {
+  try {
+    const { paymentId } = req.query;
+    const { razorpayPaymentId, razorpayOrderId, razorpaySignature } = req.body;
+    const getDoc = await Razorpayment.findOne({
+      gatewayId: razorpayOrderId,
+    });
+
+    if (getDoc) {
+      const hmac = crypto.createHmac("sha256", process.env.RAZORPAY_SECRET_KEY);
+      const data = hmac.update(`${razorpayOrderId}|${razorpayPaymentId}`);
+      const generatedSignature = data.digest("hex");
+      if (generatedSignature === razorpaySignature) {
+        const fetchOrderData = await instance.orders.fetch(razorpayOrderId);
+        if (fetchOrderData.status) {
+          delete fetchOrderData.id;
+          const updatePayment = await Razorpayment.findOneAndUpdate(
+            { _id: paymentId },
+            {
+              amount: fetchOrderData.amount / 100,
+              amountPaid: fetchOrderData.amount_paid / 100,
+              amountDue: fetchOrderData.amount_due,
+              status: fetchOrderData.status,
+              attempts: fetchOrderData.attempts,
+            },
+            { new: true }
+          );
+          if (updatePayment.category === "membership") {
+            await User.findByIdAndUpdate(
+              updatePayment.userId,
+              { status: "active" },
+              { new: true }
+            );
+          } else if (updatePayment.category === "app") {
+            await User.findByIdAndUpdate(
+              updatePayment.userId,
+              { subscription: "premium" },
+              { new: true }
+            );
+          }
+          return responseHandler(
+            res,
+            200,
+            "Payment updated successfully",
+            updatePayment
+          );
+        } else {
+          return responseHandler(
+            res,
+            500,
+            `Payment failed: ${fetchOrderData.message}`
+          );
+        }
+      } else {
+        return responseHandler(
+          res,
+          400,
+          "Unable to verify the signature ! Contact Team now"
+        );
+      }
+    } else {
+      return responseHandler(res, 500, "Payment not found");
+    }
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
 };

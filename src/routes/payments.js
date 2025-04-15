@@ -4,6 +4,9 @@ const authVerify = require("../middlewares/authVerify");
 
 const paymentRoute = express.Router();
 
+
+paymentRoute.post("/razorpay-callback", paymentController.razorpayCallback);
+
 paymentRoute.use(authVerify);
 
 paymentRoute
@@ -12,6 +15,7 @@ paymentRoute
   .get(paymentController.getPayments);
 
 paymentRoute.post("/user", paymentController.createUserPayment);
+paymentRoute.post("/make-payment", paymentController.makePayment);
 paymentRoute
   .route("/parent-subscription")
   .post(paymentController.createParentSubscription)
