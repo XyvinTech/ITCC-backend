@@ -73,14 +73,19 @@ exports.getUserPayments = async (req, res) => {
   const { userId } = req.params;
 
   try {
-    const appPayment = await Payment.findOne({ user: userId, category: "app" })
+    const appPayment = await Razorpayment.findOne({
+      user: userId,
+      category: "app",
+      status: "paid",
+    })
       .sort({ createdAt: -1 })
       .populate("parentSub")
       .lean();
 
-    const membershipPayment = await Payment.findOne({
+    const membershipPayment = await Razorpayment.findOne({
       user: userId,
       category: "membership",
+      status: "paid",
     })
       .sort({ createdAt: -1 })
       .populate("parentSub")
