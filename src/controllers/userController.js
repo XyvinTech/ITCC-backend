@@ -17,6 +17,7 @@ const { isUserAdmin } = require("../utils/adminCheck");
 const logActivity = require("../models/logActivityModel");
 const Analytic = require("../models/analyticModel");
 const mongoose = require("mongoose");
+const Product = require("../models/productModel");
 
 exports.sendOtp = async (req, res) => {
   try {
@@ -348,7 +349,11 @@ exports.getSingleUser = async (req, res) => {
     const adminDetails = await isUserAdmin(id);
 
     const level = `${findUser?.chapter?.districtId?.zoneId?.stateId?.name} State ${findUser?.chapter?.districtId?.zoneId?.name} Zone ${findUser?.chapter?.districtId?.name} District ${findUser?.chapter?.name} Chapter`;
-
+    const products = await Product.find({ seller: id });
+    const reviews = await Review.find({ toUser: id }).populate({
+      path: "reviewer",
+      select: "name image", 
+    });
     const mappedData = {
       ...findUser._doc,
       level,
@@ -356,6 +361,8 @@ exports.getSingleUser = async (req, res) => {
       adminType: adminDetails?.type || null,
       levelName: adminDetails?.name || null,
       levelId: adminDetails?.id,
+      products,
+      reviews
     };
 
     if (findUser) {
