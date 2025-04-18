@@ -230,7 +230,10 @@ exports.getAllEventsForAdmin = async (req, res) => {
     const skipCount = 10 * (pageNo - 1);
     const filter = {};
     if (search) {
-      filter.$or = [{ eventName: { $regex: search, $options: "i" } }];
+      filter.$or = [
+        { eventName: { $regex: search, $options: "i" } },
+        { organiserName: { $regex: search, $options: "i" } },
+      ];
     }
     if (status) {
       filter.status = status;
