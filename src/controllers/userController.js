@@ -351,7 +351,6 @@ exports.getSingleUser = async (req, res) => {
 
     const mappedData = {
       ...findUser._doc,
-      freeTrialEndDate: findUser?.freeTrialEndDate || null,
       level,
       isAdmin: adminDetails ? true : false,
       adminType: adminDetails?.type || null,
