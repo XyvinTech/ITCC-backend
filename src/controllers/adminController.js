@@ -733,7 +733,7 @@ exports.bulkCreateUser = async (req, res) => {
 
 exports.downloadUser = async (req, res) => {
   try {
-    const { status, installed } = req.query;
+    const { status, installed, name } = req.query;
     const filter = {};
     if (status) {
       filter.status = status;
@@ -744,6 +744,9 @@ exports.downloadUser = async (req, res) => {
       filter.fcm = {
         $nin: [null, ""],
       };
+    }
+    if (name && name !== "") {
+      filter.name = { $regex: name, $options: "i" };
     }
     const users = await User.find(filter).populate("chapter", "name").lean();
     if (users.length === 0) {
