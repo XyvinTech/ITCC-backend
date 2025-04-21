@@ -846,10 +846,11 @@ exports.loginUser = async (req, res) => {
           user.fcm = fcm;
           user.save();
           const token = generateToken(user._id);
-          return responseHandler(res, 200, "User logged in successfully", {
+          const data={
             token: token,
-            Id: user._id,
-          });
+            userId: user._id,
+          }
+          return responseHandler(res, 200, "User logged in successfully",data);
         }
       });
   } catch (error) {
