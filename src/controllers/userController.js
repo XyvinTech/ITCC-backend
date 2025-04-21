@@ -837,10 +837,11 @@ exports.loginUser = async (req, res) => {
           user.uid = decodedToken.uid;
           user.save();
           const token = generateToken(user._id);
-          return responseHandler(res, 200, "User logged in successfully", {
+          const data={
             token: token,
             userId: user._id,
-          });
+          }
+          return responseHandler(res, 200, "User logged in successfully", data);
         } else {
           user.uid = decodedToken.uid;
           user.fcm = fcm;
