@@ -848,7 +848,7 @@ exports.loginUser = async (req, res) => {
           const token = generateToken(user._id);
           return responseHandler(res, 200, "User logged in successfully", {
             token: token,
-            userId: user._id,
+            Id: user._id,
           });
         }
       });
