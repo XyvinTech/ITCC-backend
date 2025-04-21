@@ -79,7 +79,6 @@ exports.getUserPayments = async (req, res) => {
       status: "paid",
     })
       .sort({ createdAt: -1 })
-      .populate("parentSub")
       .lean();
 
     const membershipPayment = await Razorpayment.findOne({
@@ -88,7 +87,6 @@ exports.getUserPayments = async (req, res) => {
       status: "paid",
     })
       .sort({ createdAt: -1 })
-      .populate("parentSub")
       .lean();
 
     const payments = [];
@@ -407,11 +405,17 @@ exports.makePayment = async (req, res) => {
     const dateRandom = new Date().getTime();
     const { amount, category } = req.body;
 
+    const appName = "ITCC";
+
     const options = {
       amount: amount * 100,
       currency: "INR",
-      receipt: `order_id${dateRandom}`,
+      receipt: `${appName}_order_${dateRandom}`,
+      notes: {
+        appName: appName,
+      },
     };
+
     instance.orders.create(options, async function (err, order) {
       if (order) {
         const paymentData = {
@@ -460,6 +464,8 @@ exports.razorpayCallback = async (req, res) => {
       const data = hmac.update(`${razorpayOrderId}|${razorpayPaymentId}`);
       const generatedSignature = data.digest("hex");
       if (generatedSignature === razorpaySignature) {
+        let expiryDate = new Date();
+        expiryDate.setDate(expiryDate.getDate() + 365);
         const fetchOrderData = await instance.orders.fetch(razorpayOrderId);
         if (fetchOrderData.status) {
           delete fetchOrderData.id;
@@ -471,18 +477,19 @@ exports.razorpayCallback = async (req, res) => {
               amountDue: fetchOrderData.amount_due,
               status: fetchOrderData.status,
               attempts: fetchOrderData.attempts,
+              expiryDate: expiryDate,
             },
             { new: true }
           );
           if (updatePayment.category === "membership") {
             await User.findByIdAndUpdate(
-              updatePayment.userId,
-              { status: "active" },
+              updatePayment.user,
+              { status: "active", freeTrialEndDate: null },
               { new: true }
             );
           } else if (updatePayment.category === "app") {
             await User.findByIdAndUpdate(
-              updatePayment.userId,
+              updatePayment.user,
               { subscription: "premium" },
               { new: true }
             );

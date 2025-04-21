@@ -903,6 +903,7 @@ exports.approveUser = async (req, res) => {
     if (!findUser) {
       return responseHandler(res, 404, "User not found");
     }
+    req.body.status = status === "active" ? "trial" : "inactive";
     const editUser = await User.findByIdAndUpdate(id, req.body, { new: true });
 
     let message;
