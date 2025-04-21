@@ -826,11 +826,15 @@ exports.loginUser = async (req, res) => {
             fcm,
           });
           const token = generateToken(newUser._id);
+          const data={
+            token: token,
+            userId: newUser._id,
+          }
           return responseHandler(
             res,
             200,
             "User logged in successfully",
-            token
+            data
           );
         } else if (user.uid && user.uid !== null) {
           user.fcm = fcm;
