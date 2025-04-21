@@ -284,7 +284,14 @@ exports.getAllProducts = async (req, res) => {
 
     const totalCount = await Product.countDocuments(filter);
     const products = await Product.find(filter)
-      .populate("seller", "name")
+      .populate({
+        path: "seller",
+        select: "name chapter",
+        populate: {
+          path: "chapter",
+          select: "name",
+        },
+      })
       .skip(skipCount)
       .limit(parseInt(limit))
       .sort({ createdAt: -1 })
@@ -294,6 +301,7 @@ exports.getAllProducts = async (req, res) => {
       return {
         ...item,
         sellerName: item?.seller?.name,
+        chapterName: item?.seller?.chapter?.name,
       };
     });
 

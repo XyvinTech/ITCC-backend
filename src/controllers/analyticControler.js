@@ -444,7 +444,7 @@ exports.updateRequestStatus = async (req, res) => {
       await sendInAppNotification(
         fcm,
         `Your request for ${updatedRequest.type} has been ${action}`,
-        `Your request for ${updatedRequest.title} with ${updatedRequest.type} has been ${action}`,
+        `Your request for ${updatedRequest.title}, with a ${updatedRequest.type}, has been ${action}` .
         null,
         "analytics"
       );
