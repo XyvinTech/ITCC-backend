@@ -35,7 +35,7 @@ const userSchema = mongoose.Schema(
         "awaiting_payment",
         "trial",
       ],
-      default: "inactive",
+      default: "active",
     },
     address: { type: String },
     company: [
@@ -68,7 +68,7 @@ const userSchema = mongoose.Schema(
     subscription: {
       type: String,
       enum: ["free", "premium"],
-      default: "free",
+      default: "premium",
     },
     dateOfJoining: { type: Date },
     fcm: { type: String },

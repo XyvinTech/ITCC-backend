@@ -1,3 +1,3 @@
 require("./updateEventStatus");
 require("./subscription");
-require("./freeTrial");
+// require("./freeTrial");

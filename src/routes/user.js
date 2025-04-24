@@ -29,8 +29,8 @@ userRoute.get("/admin/list", userController.getAllUsers);
 userRoute.get("/list", userController.listUsers);
 userRoute.get("/listuid", userController.listUserIdName);
 
-userRoute.get("/approvals", userController.getApprovals);
-userRoute.put("/approval/:id", userController.approveUser);
+// userRoute.get("/approvals", userController.getApprovals);
+// userRoute.put("/approval/:id", userController.approveUser);
 
 userRoute.put("/block/:id", userController.blockUser);
 userRoute.put("/unblock/:id", userController.unblockUser);
