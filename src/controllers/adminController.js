@@ -21,6 +21,7 @@ const { generateUniqueMemberId } = require("../utils/generateUniqueMemberId");
 const sendMail = require("../utils/sendMail");
 const validations = require("../validations");
 const moment = require("moment-timezone");
+
 exports.loginAdmin = async (req, res) => {
   try {
     const { email, password } = req.body;
