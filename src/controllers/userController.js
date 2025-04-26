@@ -824,6 +824,7 @@ exports.loginUser = async (req, res) => {
             uid: decodedToken.uid,
             phone: decodedToken.phone_number,
             fcm,
+            chapter: "680c8a5af3bd72387e04d1ff",
           });
           const token = generateToken(newUser._id);
           const data={
