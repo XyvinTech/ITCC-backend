@@ -143,6 +143,7 @@ exports.getUserNotifications = async (req, res) => {
       users: {
         $elemMatch: {
           user: userId,
+          read: false,
         },
       },
     }).sort({ createdAt: -1, _id: 1 }).limit(20);
