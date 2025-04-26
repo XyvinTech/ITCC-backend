@@ -18,7 +18,6 @@ const logActivity = require("../models/logActivityModel");
 const Analytic = require("../models/analyticModel");
 const mongoose = require("mongoose");
 const Product = require("../models/productModel");
-
 exports.sendOtp = async (req, res) => {
   try {
     const { phone } = req.body;
