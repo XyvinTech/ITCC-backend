@@ -352,7 +352,7 @@ exports.getSingleUser = async (req, res) => {
     const products = await Product.find({ seller: id });
     const reviews = await Review.find({ toUser: id }).populate({
       path: "reviewer",
-      select: "name image", 
+      select: "name image",
     });
     const mappedData = {
       ...findUser._doc,
@@ -362,7 +362,7 @@ exports.getSingleUser = async (req, res) => {
       levelName: adminDetails?.name || null,
       levelId: adminDetails?.id,
       products,
-      reviews
+      reviews,
     };
 
     if (findUser) {
@@ -457,6 +457,14 @@ exports.updateUser = async (req, res) => {
     if (!findUser) {
       return responseHandler(res, 404, "User not found");
     }
+
+    const chapter = await Chapter.findById(findUser.chapter);
+    const uniqueMemberId = await generateUniqueMemberId(
+      req.body.name,
+      chapter.shortCode
+    );
+
+    req.body.memberId = uniqueMemberId;
 
     const editUser = await User.findByIdAndUpdate(id, req.body, {
       new: true,
@@ -827,36 +835,31 @@ exports.loginUser = async (req, res) => {
             chapter: "680c8a5af3bd72387e04d1ff",
           });
           const token = generateToken(newUser._id);
-          const data={
+          const data = {
             token: token,
             userId: newUser._id,
-          }
-          return responseHandler(
-            res,
-            200,
-            "User logged in successfully",
-            data
-          );
+          };
+          return responseHandler(res, 200, "User logged in successfully", data);
         } else if (user.uid && user.uid !== null) {
           user.fcm = fcm;
           user.uid = decodedToken.uid;
           user.save();
           const token = generateToken(user._id);
-          const data={
+          const data = {
             token: token,
             userId: user._id,
-          }
+          };
           return responseHandler(res, 200, "User logged in successfully", data);
         } else {
           user.uid = decodedToken.uid;
           user.fcm = fcm;
           user.save();
           const token = generateToken(user._id);
-          const data={
+          const data = {
             token: token,
             userId: user._id,
-          }
-          return responseHandler(res, 200, "User logged in successfully",data);
+          };
+          return responseHandler(res, 200, "User logged in successfully", data);
         }
       });
   } catch (error) {
@@ -884,7 +887,9 @@ exports.getApprovals = async (req, res) => {
     const skipCount = 10 * (pageNo - 1);
     const filter = { status: "inactive" };
     const totalCount = await User.countDocuments(filter);
-    const data = await User.find(filter).populate("chapter","name").skip(skipCount)
+    const data = await User.find(filter)
+      .populate("chapter", "name")
+      .skip(skipCount)
       .limit(limit)
       .sort({ createdAt: -1, _id: 1 })
       .lean();
