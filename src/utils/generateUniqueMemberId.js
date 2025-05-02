@@ -10,22 +10,30 @@ exports.generateUniqueMemberId = async (
   }
 
   const firstLetter = name.charAt(0).toUpperCase();
-  let counter = 1;
-  let uniqueMemberId;
-  let isUnique = false;
+  const idPrefix = `${chapterShortCode}${firstLetter}`;
 
-  while (!isUnique) {
-    const counterString = counter < 10 ? `0${counter}` : `${counter}`;
-    uniqueMemberId = `${chapterShortCode}${firstLetter}${counterString}`;
+  const existingUsers = await User.find({
+    memberId: { $regex: `^${idPrefix}\\d{2,}$` },
+  }).select("memberId -_id");
 
-    const existingUser = await User.findOne({ memberId: uniqueMemberId });
+  const allExistingIds = new Set(
+    existingUsers
+      .map((user) => user.memberId)
+      .concat([...(existingIdsSet || [])])
+  );
 
-    if (!existingUser && !existingIdsSet?.has(uniqueMemberId)) {
-      isUnique = true;
-    } else {
-      counter++;
+  let maxCounter = 0;
+  for (const id of allExistingIds) {
+    const match = id.match(new RegExp(`^${idPrefix}(\\d+)$`));
+    if (match) {
+      const num = parseInt(match[1], 10);
+      if (num > maxCounter) maxCounter = num;
     }
   }
+
+  const nextCounter = maxCounter + 1;
+  const counterString = nextCounter.toString().padStart(3, "0");
+  const uniqueMemberId = `${idPrefix}${counterString}`;
 
   return uniqueMemberId;
 };

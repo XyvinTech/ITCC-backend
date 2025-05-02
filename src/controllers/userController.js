@@ -460,7 +460,7 @@ exports.updateUser = async (req, res) => {
 
     const chapter = await Chapter.findById(findUser.chapter);
     const uniqueMemberId = await generateUniqueMemberId(
-      req.body.name,
+      findUser.name,
       chapter.shortCode
     );
 
