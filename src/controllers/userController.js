@@ -458,13 +458,15 @@ exports.updateUser = async (req, res) => {
       return responseHandler(res, 404, "User not found");
     }
 
-    const chapter = await Chapter.findById(findUser.chapter);
-    const uniqueMemberId = await generateUniqueMemberId(
-      findUser.name,
-      chapter.shortCode
-    );
+    if (!findUser.memberId) {
+      const chapter = await Chapter.findById(findUser.chapter);
+      const uniqueMemberId = await generateUniqueMemberId(
+        findUser.name,
+        chapter.shortCode
+      );
 
-    req.body.memberId = uniqueMemberId;
+      req.body.memberId = uniqueMemberId;
+    }
 
     const editUser = await User.findByIdAndUpdate(id, req.body, {
       new: true,
