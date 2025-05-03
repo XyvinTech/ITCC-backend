@@ -73,6 +73,7 @@ const userSchema = mongoose.Schema(
     dateOfJoining: { type: Date },
     fcm: { type: String },
     freeTrialEndDate: { type: Date },
+    blueTick: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

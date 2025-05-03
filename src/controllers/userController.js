@@ -1134,7 +1134,49 @@ exports.adminUserUnblock = async (req, res) => {
     });
   }
 };
+exports.adminUserVerify = async (req, res) => {
+  let status = "failure";
+  let errorMessage = null;
+  try {
+    const { id } = req.params;
+    const { blueTick } = req.body;
+    if (!id) {
+      return responseHandler(res, 400, "User ID is required");
+    }
+    const findUser = await User.findById(id);
+    if (!findUser) {
+      return responseHandler(res, 404, "User not found");
+    }
+    const editUser = await User.findByIdAndUpdate(
+      id,
+      {
+        $set: { blueTick: blueTick },
+      },
+      { new: true }
+    );
 
+    status = "success";
+    if (!editUser) {
+      return responseHandler(res, 400, `User update failed...!`);
+    }
+    return responseHandler(res, 200,  `User ${blueTick ? "verified" : "unverified"} successfully`);
+  } catch (error) {
+    errorMessage = error.message;
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  } finally {
+    await logActivity.create({
+      admin: req.user,
+      type: "user",
+      description: "Get admin details",
+      apiEndpoint: req.originalUrl,
+      httpMethod: req.method,
+      host: req.headers["x-forwarded-for"] || req.ip,
+      agent: req.headers["user-agent"],
+      status,
+      errorMessage,
+    });
+  }
+};
 exports.listUserIdName = async (req, res) => {
   try {
     const filter = {

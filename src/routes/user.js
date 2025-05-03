@@ -37,7 +37,7 @@ userRoute.put("/unblock/:id", userController.unblockUser);
 
 userRoute.patch("/admin/block-user/:id", userController.adminUserBlock);
 userRoute.patch("/admin/unblock-user/:id", userController.adminUserUnblock);
-
+userRoute.patch("/admin/verify-user/:id", userController.adminUserVerify);
 userRoute.patch("/analytic-review/:userId", userController.analyticReview);
 
 userRoute.get("/dashboard", userController.fetchDashboard);

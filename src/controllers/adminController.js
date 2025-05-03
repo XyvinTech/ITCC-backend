@@ -763,6 +763,7 @@ exports.downloadUser = async (req, res) => {
       { header: "Business Catogary", key: "BusinessCatogary" },
       { header: "Business Sub Catogary", key: "BusinessSubCatogary" },
       { header: "Subscription", key: "Subscription" },
+      { header: "Installed Date", key: "InstalledDate" },
     ];
 
     const mappedData = users.map((item) => {
@@ -779,6 +780,9 @@ exports.downloadUser = async (req, res) => {
         BusinessCatogary: item.businessCatogary,
         BusinessSubCatogary: item.businessSubCatogary,
         Subscription: item.subscription,
+        InstalledDate: item.createdAt
+          ? moment(item.createdAt).format("DD-MM-YYYY")
+          : "",
       };
     });
 
