@@ -181,6 +181,7 @@ exports.getSingleEvent = async (req, res) => {
           name: rsvp.name,
           phone: rsvp.phone,
           memberId: rsvp.memberId,
+          _id: rsvp._id,
         };
       }),
       attendedCount: event?.attented?.length,

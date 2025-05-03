@@ -42,6 +42,7 @@ exports.editEventSchema = Joi.object({
   type: Joi.string(),
   image: Joi.string(),
   eventDate: Joi.date(),
+  rsvp: Joi.array().items(Joi.string()),
   eventEndDate: Joi.date(),
   startDate: Joi.date(),
   endDate: Joi.date(),
