@@ -1177,6 +1177,51 @@ exports.adminUserVerify = async (req, res) => {
     });
   }
 };
+exports.bulkVerify = async (req, res) => {
+  let status = "failure";
+  let errorMessage = null;
+  try {
+    const { ids } = req.body;
+
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return responseHandler(
+        res,
+        400,
+        "User IDs are required and should be an array"
+      );
+    }
+
+    const users = await User.find({ _id: { $in: ids } });
+
+    if (users.length === 0) {
+      return responseHandler(res, 404, "No users found for the provided IDs");
+    }
+
+    const updatePromises = users.map((user) =>
+      User.findByIdAndUpdate(user._id, { blueTick: !user.blueTick })
+    );
+    await Promise.all(updatePromises);
+
+    status = "success";
+
+    return responseHandler(res, 200, `User Updated successfully`);
+  } catch (error) {
+    errorMessage = error.message;
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  } finally {
+    await logActivity.create({
+      admin: req.user,
+      type: "user",
+      description: "Get admin details",
+      apiEndpoint: req.originalUrl,
+      httpMethod: req.method,
+      host: req.headers["x-forwarded-for"] || req.ip,
+      agent: req.headers["user-agent"],
+      status,
+      errorMessage,
+    });
+  }
+};
 exports.listUserIdName = async (req, res) => {
   try {
     const filter = {
