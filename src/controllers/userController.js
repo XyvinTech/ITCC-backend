@@ -468,6 +468,12 @@ exports.updateUser = async (req, res) => {
       req.body.memberId = uniqueMemberId;
     }
 
+    if (!findUser.freeTrialEndDate) {
+      const today = new Date();
+      const freeTrialEndDate = new Date(today.setDate(today.getDate() + 30));
+      req.body.freeTrialEndDate = freeTrialEndDate;
+    }
+
     const editUser = await User.findByIdAndUpdate(id, req.body, {
       new: true,
     });
