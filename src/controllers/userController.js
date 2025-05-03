@@ -461,7 +461,7 @@ exports.updateUser = async (req, res) => {
     if (!findUser.memberId) {
       const chapter = await Chapter.findById(findUser.chapter);
       const uniqueMemberId = await generateUniqueMemberId(
-        findUser.name,
+        req.body.name,
         chapter.shortCode
       );
 
