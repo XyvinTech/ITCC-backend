@@ -772,7 +772,9 @@ exports.downloadUser = async (req, res) => {
         Phone: item.phone,
         Email: item.email,
         ChapterName: item.chapter?.name,
-        DateOfJoining: moment(item.dateOfJoining).format("DD-MM-YYYY"),
+        DateOfJoining: item.dateOfJoining
+        ? moment(item.dateOfJoining).format("DD-MM-YYYY")
+        : "",
         Address: item.address,
         BusinessCatogary: item.businessCatogary,
         BusinessSubCatogary: item.businessSubCatogary,
