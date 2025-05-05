@@ -363,6 +363,7 @@ exports.getSingleUser = async (req, res) => {
       levelId: adminDetails?.id,
       products,
       reviews,
+      freeTrialEndDate: null
     };
 
     if (findUser) {
