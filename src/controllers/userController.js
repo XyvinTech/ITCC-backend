@@ -834,7 +834,10 @@ exports.loginUser = async (req, res) => {
       .auth()
       .verifyIdToken(id)
       .then(async (decodedToken) => {
-        user = await User.findOne({ phone: decodedToken.phone_number });
+        user = await User.findOne({
+          phone: decodedToken.phone_number,
+          status: { $ne: "deleted" },
+        });
         if (!user) {
           const newUser = await User.create({
             uid: decodedToken.uid,
@@ -1159,7 +1162,11 @@ exports.adminUserVerify = async (req, res) => {
     if (!editUser) {
       return responseHandler(res, 400, `User update failed...!`);
     }
-    return responseHandler(res, 200,  `User ${blueTick ? "verified" : "unverified"} successfully`);
+    return responseHandler(
+      res,
+      200,
+      `User ${blueTick ? "verified" : "unverified"} successfully`
+    );
   } catch (error) {
     errorMessage = error.message;
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
