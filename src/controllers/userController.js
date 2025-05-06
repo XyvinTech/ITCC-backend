@@ -715,6 +715,7 @@ exports.listUsers = async (req, res) => {
                     },
                   ],
                 },
+                  blueTick: 1,
                 state: { _id: "$state._id", name: "$state.name" },
                 zone: { _id: "$zone._id", name: "$zone.name" },
                 district: { _id: "$district._id", name: "$district.name" },
