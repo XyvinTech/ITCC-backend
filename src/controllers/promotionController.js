@@ -250,6 +250,8 @@ exports.getUserPromotion = async (req, res) => {
     filter.startDate = {
       $lte: today,
     };
+
+    filter.status = "active";
     const data = await Promotion.find(filter).sort({ createdAt: -1 }).lean();
 
     return responseHandler(res, 200, `Promotions found successfully..!`, data);
