@@ -239,6 +239,7 @@ exports.getAllEventsForAdmin = async (req, res) => {
     if (status) {
       filter.status = status;
     }
+    const totalCount = await Event.countDocuments(filter);
     const events = await Event.find(filter)
       .populate("rsvp", "name phone memberId")
       .populate("coordinator", "name phone memberId image role")
@@ -269,7 +270,8 @@ exports.getAllEventsForAdmin = async (req, res) => {
       res,
       200,
       "Events retrieved successfully",
-      mappedEvents
+      mappedEvents,
+      totalCount
     );
   } catch (error) {
     errorMessage = error.message;
