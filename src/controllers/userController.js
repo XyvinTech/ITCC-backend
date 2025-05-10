@@ -18,6 +18,7 @@ const logActivity = require("../models/logActivityModel");
 const Analytic = require("../models/analyticModel");
 const mongoose = require("mongoose");
 const Product = require("../models/productModel");
+const Enquiry = require("../models/enquiry");
 
 exports.sendOtp = async (req, res) => {
   try {
@@ -363,7 +364,7 @@ exports.getSingleUser = async (req, res) => {
       levelId: adminDetails?.id,
       products,
       reviews,
-      freeTrialEndDate: null
+      freeTrialEndDate: null,
     };
 
     if (findUser) {
@@ -715,7 +716,7 @@ exports.listUsers = async (req, res) => {
                     },
                   ],
                 },
-                  blueTick: 1,
+                blueTick: 1,
                 state: { _id: "$state._id", name: "$state.name" },
                 zone: { _id: "$zone._id", name: "$zone.name" },
                 district: { _id: "$district._id", name: "$district.name" },
@@ -1440,6 +1441,43 @@ exports.changePhoneNumber = async (req, res) => {
     user.phone = phone;
     await user.save();
     return responseHandler(res, 200, "Phone number changed successfully");
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
+  }
+};
+exports.sendEnquiry = async (req, res) => {
+  try {
+    const { error } = validations.createEnquirySchema.validate(req.body, {
+      abortEarly: true,
+    });
+
+    if (error) {
+      return responseHandler(res, 400, `Invalid input: ${error.message}`);
+    }
+
+    const newEnquiry = await Enquiry.create(req.body);
+    if (newEnquiry) {
+      return responseHandler(
+        res,
+        201,
+        "Enquiry created successfully",
+        newEnquiry
+      );
+    }
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
+  }
+};
+exports.getEnquiry = async (req, res) => {
+  try {
+    const user = req.userId;
+    const enquiries = await Enquiry.find({ user: user });
+    return responseHandler(
+      res,
+      200,
+      "Enquiries fetched successfully",
+      enquiries
+    );
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }

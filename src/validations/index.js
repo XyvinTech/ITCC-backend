@@ -520,3 +520,10 @@ exports.bulkCreateUserSchema = Joi.array().items(
     designation: Joi.string(),
   })
 );
+exports.createEnquirySchema = Joi.object({
+  user: Joi.string().required(),
+  name: Joi.string().required(),
+  email: Joi.string().email().required(),
+  phone: Joi.string().required(),
+  description: Joi.string().required(),
+});
