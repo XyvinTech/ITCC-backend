@@ -4,6 +4,7 @@ const Promotion = require("../models/promotionModel");
 const validations = require("../validations");
 const checkAccess = require("../helpers/checkAccess");
 const logActivity = require("../models/logActivityModel");
+const { handlePrioritySwap } = require("../helpers/handlePriority");
 
 exports.createPromotion = async (req, res) => {
   let status = "failure";
@@ -31,7 +32,9 @@ exports.createPromotion = async (req, res) => {
         `Invalid input: ${createPromotionValidator.error}`
       );
     }
-
+    if (req.body.type) {
+      await handlePrioritySwap(req.body.priority, req.body.type, null);
+    }
     const newPromotion = await Promotion.create(req.body);
     status = "success";
     if (!newPromotion) {
@@ -132,7 +135,16 @@ exports.updatePromotion = async (req, res) => {
     if (error) {
       return responseHandler(res, 400, `Invalid input: ${error.message}`);
     }
+    const existingPromotion = await Promotion.findById(id);
+    if (!existingPromotion) {
+      return responseHandler(res, 404, "Promotion not found");
+    }
 
+    const promotionType = req.body.type || existingPromotion.type;
+    if (req.body.priority) {
+      await handlePrioritySwap(req.body.priority, promotionType, id);
+      delete req.body.priority;
+    }
     const updatePromotion = await Promotion.findByIdAndUpdate(id, req.body, {
       new: true,
     });
