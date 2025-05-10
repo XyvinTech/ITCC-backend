@@ -90,7 +90,8 @@ exports.createAdmin = async (req, res) => {
       subject: "Admin Registration Notification",
       text: `Hello, ${req.body.name}. 
         You have been registered as an admin on the platform. 
-        Please use the following credentials to log in: Email: ${req.body.email} Password: ${generatedPassword} 
+        Please use the following credentials to log in: Email: ${req.body.email} Password: ${generatedPassword}
+        To log in, go to: https://admin.itccconnect.com/ 
         Thank you for joining us! 
         Best regards, The Admin Team`,
     };
