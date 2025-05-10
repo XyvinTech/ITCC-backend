@@ -1,11 +1,12 @@
 const express = require("express");
 const feedsController = require("../controllers/feedsController");
 const authVerify = require("../middlewares/authVerify");
+const checkUserAccess = require("../middlewares/checkUserAccess");
 const feedsRoute = express.Router();
 
 feedsRoute.use(authVerify);
 
-feedsRoute.post("/", feedsController.createFeeds);
+feedsRoute.post("/", checkUserAccess("user"), feedsController.createFeeds);
 
 feedsRoute
   .route("/single/:id")

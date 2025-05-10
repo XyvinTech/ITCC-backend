@@ -1,6 +1,9 @@
 const express = require("express");
 const userController = require("../controllers/userController");
 const authVerify = require("../middlewares/authVerify");
+const checkAccess = require("../helpers/checkAccess");
+const userAccessRoute = require("./userAccess");
+const checkUserAccess = require("../middlewares/checkUserAccess");
 const userRoute = express.Router();
 
 userRoute.post("/send-otp", userController.sendOtp);
@@ -15,7 +18,7 @@ userRoute.use(authVerify);
 userRoute.patch("/change-phone-number", userController.changePhoneNumber);
 userRoute.get("/", userController.fetchUser);
 userRoute.get("/users", userController.getUsers);
-userRoute.patch("/update", userController.updateUser);
+userRoute.patch("/update",checkUserAccess("user"), userController.updateUser);
 userRoute.post("/", userController.createNewUser);
 userRoute.post("/admin", userController.createUser);
 userRoute.post("/admin/bulk-verify", userController.bulkVerify);
