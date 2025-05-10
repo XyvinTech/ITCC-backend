@@ -122,6 +122,7 @@ exports.createPromotionSchema = Joi.object({
   endDate: Joi.date().required(),
   media: Joi.string(),
   link: Joi.string(),
+  priority: Joi.number(),
   status: Joi.string(),
 });
 
@@ -134,6 +135,7 @@ exports.editPromotionSchema = Joi.object({
   media: Joi.string(),
   link: Joi.string(),
   status: Joi.string(),
+  priority: Joi.number(),
 });
 
 exports.createNotificationSchema = Joi.object({

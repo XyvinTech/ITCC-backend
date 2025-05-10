@@ -212,7 +212,7 @@ exports.getAllPromotion = async (req, res) => {
     const data = await Promotion.find(filter)
       .skip(skipCount)
       .limit(limit)
-      .sort({ createdAt: -1, _id: 1 })
+      .sort({ priority: 1, createdAt: -1, _id: 1 })
       .lean();
     Status = "success";
     return responseHandler(
@@ -252,7 +252,9 @@ exports.getUserPromotion = async (req, res) => {
     };
 
     filter.status = "active";
-    const data = await Promotion.find(filter).sort({ createdAt: -1 }).lean();
+    const data = await Promotion.find(filter)
+      .sort({ priority: 1, createdAt: -1 })
+      .lean();
 
     return responseHandler(res, 200, `Promotions found successfully..!`, data);
   } catch (error) {

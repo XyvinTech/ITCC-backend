@@ -12,6 +12,7 @@ const promotionSchema = mongoose.Schema(
     endDate: { type: Date },
     media: { type: String },
     link: { type: String },
+    priority: { type: Number },
     status:{
       type: String,
       enum: ["active","expired", "inactive"],
