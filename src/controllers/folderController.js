@@ -133,6 +133,49 @@ exports.getFolder = async (req, res) => {
     });
   }
 };
+exports.getFiles = async (req, res) => {
+  try {
+    const { type } = req.query;
+    const { id } = req.params;
+    if (!id) {
+      return responseHandler(res, 400, "Folder ID is required");
+    }
+    const pipeline = [
+      {
+        $match: { _id: new mongoose.Types.ObjectId(id) },
+      },
+    ];
+
+    if (type) {
+      pipeline.push({
+        $addFields: {
+          files: {
+            $filter: {
+              input: "$files",
+              as: "file",
+              cond: { $eq: ["$$file.type", type] },
+            },
+          },
+        },
+      });
+    }
+
+    const folders = await Folder.aggregate(pipeline);
+
+    if (folders.length > 0) {
+      return responseHandler(
+        res,
+        200,
+        "Folder found successfully!",
+        folders[0]
+      );
+    } else {
+      return responseHandler(res, 404, "Folder not found");
+    }
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
+  }
+};
 exports.updateFolder = async (req, res) => {
   let status = "failure";
   let errorMessage = null;
