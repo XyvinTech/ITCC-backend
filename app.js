@@ -32,6 +32,7 @@ const paymentRoute = require("./src/routes/payments");
 const multer = require("multer");
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { Upload } = require("@aws-sdk/lib-storage");
+const folderRoute = require("./src/routes/folder");
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION,
@@ -101,6 +102,7 @@ app.use(`${BASE_PATH}/chat`, chatRoute);
 app.use(`${BASE_PATH}/subscription`, subscriptionRoute);
 app.use(`${BASE_PATH}/useraccess`, userAccessRoute);
 app.use(`${BASE_PATH}/payment`, paymentRoute);
+app.use(`${BASE_PATH}/folder`, folderRoute);
 
 app.post(`${BASE_PATH}/upload`, upload.single("image"), async (req, res) => {
   try {

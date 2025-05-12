@@ -527,3 +527,13 @@ exports.createEnquirySchema = Joi.object({
   phone: Joi.string().required(),
   description: Joi.string().required(),
 });
+exports.createFolderSchema = Joi.object({
+  name: Joi.string().required(),
+  event: Joi.string().required(),
+});
+
+exports.editFolderSchema = Joi.object({
+  name: Joi.string(),
+  event: Joi.string(),
+});
+
