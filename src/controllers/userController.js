@@ -1485,12 +1485,13 @@ exports.getEnquiry = async (req, res) => {
 exports.getEnquiryAdmin = async (req, res) => {
   try {
     const user = req.params.id;
+    const totalCount = await Enquiry.countDocuments({ user: user });
     const enquiries = await Enquiry.find({ user: user });
     return responseHandler(
       res,
       200,
       "Enquiries fetched successfully",
-      enquiries
+      enquiries,totalCount
     );
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
