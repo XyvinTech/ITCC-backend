@@ -16,7 +16,7 @@ folderRoute
 folderRoute.route("/file/:id").post(folderController.addFilesToFolder);
 folderRoute.post("/remove/:id", folderController.deleteFiles);
 folderRoute.get("/files/:id", folderController.getFiles);
-folderRoute.post("/file/add", folderController.addFileToPublicFolder);
-folderRoute.post("/file/delete", folderController.deleteFilesFromPublicFolder);
+folderRoute.post("/user/file/add", folderController.addFileToPublicFolder);
+folderRoute.post("/user/file/delete", folderController.deleteFilesFromPublicFolder);
 
 module.exports = folderRoute;
