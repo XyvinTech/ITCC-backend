@@ -1,7 +1,8 @@
+const e = require("express");
 const mongoose = require("mongoose");
 const fileSchema = new mongoose.Schema(
   {
-    type: { type: String },
+    type: { type: String,enum: ["image", "video"] },
     url: { type: String },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },

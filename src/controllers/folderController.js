@@ -4,6 +4,7 @@ const Event = require("../models/eventModel");
 const Folder = require("../models/folderModel");
 const logActivity = require("../models/logActivityModel");
 const validations = require("../validations");
+const mongoose = require("mongoose");
 
 exports.createFolder = async (req, res) => {
   let status = "failure";
@@ -77,14 +78,41 @@ exports.getFolder = async (req, res) => {
         "You don't have permission to perform this action"
       );
     }
+    const { type } = req.query;
     const { id } = req.params;
     if (!id) {
       return responseHandler(res, 400, "Folder ID is required");
     }
-    const folder = await Folder.findById(id);
+    const pipeline = [
+      {
+        $match: { _id: new mongoose.Types.ObjectId(id) },
+      },
+    ];
+
+    if (type) {
+      pipeline.push({
+        $addFields: {
+          files: {
+            $filter: {
+              input: "$files",
+              as: "file",
+              cond: { $eq: ["$$file.type", type] },
+            },
+          },
+        },
+      });
+    }
+
+    const folders = await Folder.aggregate(pipeline);
+
     status = "success";
-    if (folder) {
-      return responseHandler(res, 200, "Folder found successfully!", folder);
+    if (folders.length > 0) {
+      return responseHandler(
+        res,
+        200,
+        "Folder found successfully!",
+        folders[0]
+      );
     } else {
       return responseHandler(res, 404, "Folder not found");
     }
@@ -205,9 +233,7 @@ exports.fetchEventFolders = async (req, res) => {
     const filter = { event: id };
 
     if (search) {
-      filter.$or = [
-        { name: { $regex: search, $options: "i" } },
-      ];
+      filter.$or = [{ name: { $regex: search, $options: "i" } }];
     }
 
     const totalCount = await Folder.countDocuments(filter);
@@ -242,10 +268,7 @@ exports.getFolderForUser = async (req, res) => {
       return responseHandler(res, 400, "Folder ID is required");
     }
     const totalCount = await Folder.countDocuments({ event: id });
-    const folder = await Folder.find(id)
-      .skip(skipCount)
-      .limit(limit)
-      .lean();
+    const folder = await Folder.find(id).skip(skipCount).limit(limit).lean();
     if (!folder) {
       return responseHandler(res, 404, "Folder not found");
     }
