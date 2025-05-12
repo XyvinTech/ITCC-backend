@@ -6,7 +6,7 @@ const folderRoute = express.Router();
 folderRoute.use(authVerify);
 
 folderRoute.post("/", folderController.createFolder);
-folderRoute.get("/list/:eventId", folderController.fetchEventFolders);
+folderRoute.get("/list/:eventId", folderController.getFolderForUser);
 folderRoute.get("/admin/list/:eventId", folderController.fetchEventFolders);
 folderRoute
   .route("/single/:id")

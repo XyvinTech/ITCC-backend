@@ -194,22 +194,33 @@ exports.deleteFolder = async (req, res) => {
 };
 exports.fetchEventFolders = async (req, res) => {
   try {
-    const { pageNo = 1, limit = 10 } = req.query;
-    const skipCount = 10 * (pageNo - 1);
+    const { pageNo = 1, limit = 10, search } = req.query;
+    const skipCount = (pageNo - 1) * limit;
     const id = req.params.eventId;
 
     if (!id) {
       return responseHandler(res, 400, "Event ID is required");
     }
-    const totalCount = await Folder.countDocuments({ event: id });
-    const folders = await Folder.find({ event: id })
+
+    const filter = { event: id };
+
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const totalCount = await Folder.countDocuments(filter);
+    const folders = await Folder.find(filter)
       .skip(skipCount)
-      .limit(limit)
+      .limit(parseInt(limit))
       .sort({ createdAt: -1 })
       .lean();
+
     if (!folders.length) {
       return responseHandler(res, 404, "No folders found");
     }
+
     return responseHandler(
       res,
       200,
@@ -221,6 +232,7 @@ exports.fetchEventFolders = async (req, res) => {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
 };
+
 exports.getFolderForUser = async (req, res) => {
   try {
     const { pageNo = 1, limit = 10 } = req.query;
@@ -230,7 +242,7 @@ exports.getFolderForUser = async (req, res) => {
       return responseHandler(res, 400, "Folder ID is required");
     }
     const totalCount = await Folder.countDocuments({ event: id });
-    const folder = await Folder.findById(id)
+    const folder = await Folder.find(id)
       .skip(skipCount)
       .limit(limit)
       .lean();
