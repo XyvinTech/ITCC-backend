@@ -1482,3 +1482,17 @@ exports.getEnquiry = async (req, res) => {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
 };
+exports.getEnquiryAdmin = async (req, res) => {
+  try {
+    const user = req.params.id;
+    const enquiries = await Enquiry.find({ user: user });
+    return responseHandler(
+      res,
+      200,
+      "Enquiries fetched successfully",
+      enquiries
+    );
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
+  }
+};
