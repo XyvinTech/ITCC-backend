@@ -289,12 +289,20 @@ exports.fetchEventFolders = async (req, res) => {
     if (!folders.length) {
       return responseHandler(res, 404, "No folders found");
     }
-
+    const enhancedFolders = folders?.map((folder) => {
+      const imageCount = folder.files.filter((file) => file.type === "image").length;
+      const videoCount = folder.files.filter((file) => file.type === "video").length;
+      return {
+        ...folder,
+        imageCount,
+        videoCount,
+      };
+    });
     return responseHandler(
       res,
       200,
       "Folders fetched successfully!",
-      folders,
+      enhancedFolders,
       totalCount
     );
   } catch (error) {
