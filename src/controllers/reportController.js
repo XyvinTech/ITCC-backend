@@ -28,6 +28,14 @@ exports.createReport = async (req, res) => {
 
 exports.getReports = async (req, res) => {
   try {
+    const check = await checkAccess(req.roleId, "permissions");
+    if (!check || !check.includes("reportManagement_modify")) {
+      return responseHandler(
+        res,
+        403,
+        "You don't have permission to perform this action"
+      );
+    }
     const { pageNo = 1, limit = 10, search } = req.query;
     const skipCount = 10 * (pageNo - 1);
     const filter = {};

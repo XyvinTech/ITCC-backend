@@ -10,6 +10,14 @@ const Chapter = require("../models/chapterModel");
 
 exports.createNotification = async (req, res) => {
   try {
+    const check= await checkAccess(req.roleId, "permissions");
+    if (!check || !check.includes("notificationManagement_modify")) {
+      return responseHandler(
+        res,
+        403,
+        "You don't have permission to perform this action"
+      );
+    }
     const { error } = validations.createNotificationSchema.validate(req.body, {
       abortEarly: true,
     });
