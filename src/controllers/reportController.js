@@ -1,3 +1,4 @@
+const checkAccess = require("../helpers/checkAccess");
 const responseHandler = require("../helpers/responseHandler");
 const Report = require("../models/reportModel");
 const User = require("../models/userModel");

@@ -7,10 +7,11 @@ const sendInAppNotification = require("../utils/sendInAppNotification");
 const District = require("../models/districtModel");
 const Zone = require("../models/zoneModel");
 const Chapter = require("../models/chapterModel");
+const checkAccess = require("../helpers/checkAccess");
 
 exports.createNotification = async (req, res) => {
   try {
-    const check= await checkAccess(req.roleId, "permissions");
+    const check= checkAccess(req.roleId, "permissions");
     if (!check || !check.includes("notificationManagement_modify")) {
       return responseHandler(
         res,
