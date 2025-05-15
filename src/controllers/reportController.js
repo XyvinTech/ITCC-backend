@@ -29,7 +29,7 @@ exports.createReport = async (req, res) => {
 exports.getReports = async (req, res) => {
   try {
     const check = await checkAccess(req.roleId, "permissions");
-    if (!check || !check.includes("reportManagement_modify")) {
+    if (!check || !check.includes("reportManagement_view")) {
       return responseHandler(
         res,
         403,
