@@ -1491,8 +1491,52 @@ exports.getEnquiryAdmin = async (req, res) => {
       res,
       200,
       "Enquiries fetched successfully",
-      enquiries,totalCount
+      enquiries,
+      totalCount
     );
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
+  }
+};
+exports.getAllEnquiries = async (req, res) => {
+  try {
+    const user = req.userId;
+
+    const enquiries = await Enquiry.find({ user: user });
+    if (enquiries) {
+      const headers = [
+        {
+          key: "name",
+          label: "Name",
+        },
+        {
+          key: "email",
+          label: "Email",
+        },
+        {
+          key: "phone",
+          label: "Phone",
+        },
+        {
+          key: "description",
+          label: "Description",
+        },
+      ];
+      const mappedData = enquiries.map((item) => {
+        return {
+          name: item.name,
+          email: item.email,
+          phone: item.phone,
+          description: item.description,
+        };
+      });
+      const data = {
+        headers,
+        body: mappedData,
+      };
+      return responseHandler(res, 200, "Enquiries fetched successfully", data);
+    }
+    return responseHandler(res, 400, "No enquiries found for this user");
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }

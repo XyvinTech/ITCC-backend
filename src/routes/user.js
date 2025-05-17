@@ -35,7 +35,7 @@ userRoute.get("/listuid", userController.listUserIdName);
 userRoute.post("/enquiry", userController.sendEnquiry);
 userRoute.get("/enquiry", userController.getEnquiry);
 userRoute.get("/enquiry/:id", userController.getEnquiryAdmin);
-
+userRoute.get("/enquiry-list", userController.getAllEnquiries);
 // userRoute.get("/approvals", userController.getApprovals);
 // userRoute.put("/approval/:id", userController.approveUser);
 

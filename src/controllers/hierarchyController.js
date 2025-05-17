@@ -619,7 +619,7 @@ exports.getHierarchyList = async (req, res) => {
     }
 
     let data = [];
-
+    let totalCount = 0;
     const mapData = (items, category) =>
       items.map((item) => ({
         _id: item._id,
@@ -631,18 +631,23 @@ exports.getHierarchyList = async (req, res) => {
       }));
 
     if (type === "state") {
+      totalCount = await State.countDocuments(filter);
       const states = await State.find(filter).limit(limit).skip(skip);
       data = mapData(states, "state");
     } else if (type === "zone") {
+      totalCount = await Zone.countDocuments(filter);
       const zones = await Zone.find(filter).limit(limit).skip(skip);
       data = mapData(zones, "zone");
     } else if (type === "district") {
+      totalCount = await District.countDocuments(filter);
       const districts = await District.find(filter).limit(limit).skip(skip);
       data = mapData(districts, "district");
     } else if (type === "chapter") {
+      totalCount = await Chapter.countDocuments(filter);
       const chapters = await Chapter.find(filter).limit(limit).skip(skip);
       data = mapData(chapters, "chapter");
     } else if (type === "all") {
+      totalCount = await State.countDocuments();
       const states = await State.find();
       const zones = await Zone.find();
       const districts = await District.find();
@@ -654,6 +659,7 @@ exports.getHierarchyList = async (req, res) => {
         ...mapData(districts, "district"),
         ...mapData(chapters, "chapter"),
       ];
+      totalCount = data.length;
     } else {
       return responseHandler(res, 400, "Invalid type parameter", []);
     }
@@ -665,7 +671,8 @@ exports.getHierarchyList = async (req, res) => {
       res,
       200,
       `${type} data retrieved successfully`,
-      data
+      data,
+      totalCount
     );
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error`, []);
