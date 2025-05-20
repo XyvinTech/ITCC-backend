@@ -19,7 +19,8 @@ paymentRoute.post("/make-payment", paymentController.makePayment);
 paymentRoute
   .route("/parent-subscription")
   .post(paymentController.createParentSubscription)
-  .get(paymentController.getParentSubscription);
+  .get(paymentController.getParentSubscription)
+  
 
 paymentRoute.put("/update/:id", paymentController.updatePayment);
 
@@ -30,7 +31,8 @@ paymentRoute.patch("/status/:id", paymentController.updatePaymentStatus);
 paymentRoute
   .route("/parent-subscription/:id")
   .put(paymentController.updateParentSubscription)
-  .get(paymentController.getSingleParentSubscription);
+  .get(paymentController.getSingleParentSubscription)
+  .delete(paymentController.deleteParentSubscription);
 
 paymentRoute
   .route("/:id")

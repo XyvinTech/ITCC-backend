@@ -154,7 +154,7 @@ exports.createReport = Joi.object({
   reportType: Joi.string()
     .valid("Feeds", "Chat", "User", "Message", "Product")
     .required(),
-    reason: Joi.string().allow(""),
+  reason: Joi.string().allow(""),
 });
 
 exports.createStateSchema = Joi.object({
@@ -492,13 +492,17 @@ exports.UserPaymentSchema = Joi.object({
 });
 
 exports.createParentSubSchema = Joi.object({
-  academicYear: Joi.string().required(),
-  expiryDate: Joi.date().required(),
+  name: Joi.string().required(),
+  description: Joi.string(),
+  days: Joi.number(),
+  price: Joi.number(),
 });
 
 exports.editParentSubSchema = Joi.object({
-  academicYear: Joi.string(),
-  expiryDate: Joi.date(),
+  name: Joi.string(),
+  description: Joi.string(),
+  days: Joi.number(),
+  price: Joi.number(),
 });
 
 exports.PaymentSchema = Joi.object({
@@ -537,4 +541,3 @@ exports.editFolderSchema = Joi.object({
   name: Joi.string(),
   event: Joi.string(),
 });
-
