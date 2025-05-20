@@ -182,11 +182,13 @@ exports.createParentSubscription = async (req, res) => {
 
 exports.getParentSubscription = async (req, res) => {
   try {
+    const totalCount = await ParentSub.countDocuments();
     const payment = await ParentSub.find();
     if (!payment) {
       return responseHandler(res, 500, "Error saving payment");
     } else {
-      return responseHandler(res, 200, "Payment saved successfully", payment);
+      return responseHandler(res, 200, "Payment saved successfully", payment,
+        totalCount);
     }
   } catch (error) {
     return responseHandler(res, 500, "Internal Server Error", error.message);
@@ -398,7 +400,20 @@ exports.getSingleParentSubscription = async (req, res) => {
     return responseHandler(res, 500, "Internal Server Error", error.message);
   }
 };
+exports.deleteParentSubscription = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const subscription = await ParentSub.findByIdAndDelete(id);
 
+    if (!subscription) {
+      return responseHandler(res, 404, "Parent Subscription not found");
+    }
+
+    return responseHandler(res, 200, "Successfully deleted parent subscription", subscription);
+  } catch (error) {
+    return responseHandler(res, 500, "Internal Server Error", error.message);
+  }
+};
 exports.makePayment = async (req, res) => {
   try {
     const { userId } = req;
