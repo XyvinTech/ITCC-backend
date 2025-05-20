@@ -13,6 +13,7 @@ const razorpaymentSchema = mongoose.Schema(
     receipt: { type: String },
     status: { type: String },
     expiryDate: { type: Date },
+    parentSub: { type: mongoose.Schema.Types.ObjectId, ref: "parentSub" },
     category: {
       type: String,
       enum: ["app", "membership"],

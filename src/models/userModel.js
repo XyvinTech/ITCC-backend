@@ -35,7 +35,7 @@ const userSchema = mongoose.Schema(
         "awaiting_payment",
         "trial",
       ],
-      default: "active",
+      default: "awaiting_payment",
     },
     address: { type: String },
     company: [
