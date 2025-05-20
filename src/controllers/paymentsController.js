@@ -403,7 +403,7 @@ exports.makePayment = async (req, res) => {
   try {
     const { userId } = req;
     const dateRandom = new Date().getTime();
-    const { amount,parentSub } = req.body;
+    const { amount, category="membership",  parentSub} = req.body;
 
     const appName = "ITCC";
 
@@ -430,7 +430,7 @@ exports.makePayment = async (req, res) => {
           receipt: order.receipt,
           attempts: order.attempts,
           parentSub: parentSub,
-          category: "membership",
+          category: category,
         };
         const newPayment = await Razorpayment.create(paymentData);
         return responseHandler(
