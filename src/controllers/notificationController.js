@@ -11,7 +11,7 @@ const checkAccess = require("../helpers/checkAccess");
 
 exports.createNotification = async (req, res) => {
   try {
-    const check= checkAccess(req.roleId, "permissions");
+    const check= await checkAccess(req.roleId, "permissions");
     if (!check || !check.includes("notificationManagement_modify")) {
       return responseHandler(
         res,

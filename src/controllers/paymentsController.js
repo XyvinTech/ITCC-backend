@@ -18,6 +18,8 @@ const instance = new Razorpay({
   key_secret: process.env.RAZORPAY_SECRET_KEY,
 });
 const crypto = require("crypto");
+const logActivity = require("../models/logActivityModel");
+const checkAccess = require("../helpers/checkAccess");
 
 exports.updatePayment = async (req, res) => {
   try {
@@ -162,7 +164,17 @@ exports.createUserPayment = async (req, res) => {
 };
 
 exports.createParentSubscription = async (req, res) => {
+  let status = "failure";
+  let errorMessage = null;
   try {
+    const check = await checkAccess(req.roleId, "permissions");
+    if (!check || !check.includes("subscriptionManagement_modify")) {
+      return responseHandler(
+        res,
+        403,
+        "You don't have permission to perform this action"
+      );
+    }
     const { error } = createParentSubSchema.validate(req.body, {
       abortEarly: true,
     });
@@ -170,6 +182,7 @@ exports.createParentSubscription = async (req, res) => {
       return responseHandler(res, 400, `Invalid input: ${error.message}`);
     }
     const payment = await ParentSub.create(req.body);
+    status = "success";
     if (!payment) {
       return responseHandler(res, 500, "Error saving payment");
     } else {
@@ -177,6 +190,18 @@ exports.createParentSubscription = async (req, res) => {
     }
   } catch (error) {
     return responseHandler(res, 500, "Internal Server Error", error.message);
+  } finally {
+    await logActivity.create({
+      admin: req.user,
+      type: "admin",
+      description: "Subscription creation",
+      apiEndpoint: req.originalUrl,
+      httpMethod: req.method,
+      host: req.headers["x-forwarded-for"] || req.ip,
+      agent: req.headers["user-agent"],
+      status,
+      errorMessage,
+    });
   }
 };
 
@@ -187,8 +212,13 @@ exports.getParentSubscription = async (req, res) => {
     if (!payment) {
       return responseHandler(res, 500, "Error saving payment");
     } else {
-      return responseHandler(res, 200, "Payment saved successfully", payment,
-        totalCount);
+      return responseHandler(
+        res,
+        200,
+        "Payment saved successfully",
+        payment,
+        totalCount
+      );
     }
   } catch (error) {
     return responseHandler(res, 500, "Internal Server Error", error.message);
@@ -409,7 +439,12 @@ exports.deleteParentSubscription = async (req, res) => {
       return responseHandler(res, 404, "Parent Subscription not found");
     }
 
-    return responseHandler(res, 200, "Successfully deleted parent subscription", subscription);
+    return responseHandler(
+      res,
+      200,
+      "Successfully deleted parent subscription",
+      subscription
+    );
   } catch (error) {
     return responseHandler(res, 500, "Internal Server Error", error.message);
   }
@@ -418,7 +453,7 @@ exports.makePayment = async (req, res) => {
   try {
     const { userId } = req;
     const dateRandom = new Date().getTime();
-    const { amount, category="membership",  parentSub} = req.body;
+    const { amount, category = "membership", parentSub } = req.body;
 
     const appName = "ITCC";
 
@@ -481,7 +516,7 @@ exports.razorpayCallback = async (req, res) => {
       const generatedSignature = data.digest("hex");
       if (generatedSignature === razorpaySignature) {
         let expiryDate = new Date();
-        const days = getDoc.parentSub?.days
+        const days = getDoc.parentSub?.days;
         expiryDate.setDate(expiryDate.getDate() + days);
         const fetchOrderData = await instance.orders.fetch(razorpayOrderId);
         if (fetchOrderData.status) {
