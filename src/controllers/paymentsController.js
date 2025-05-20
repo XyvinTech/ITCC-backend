@@ -403,7 +403,7 @@ exports.makePayment = async (req, res) => {
   try {
     const { userId } = req;
     const dateRandom = new Date().getTime();
-    const { amount, category } = req.body;
+    const { amount,parentSub } = req.body;
 
     const appName = "ITCC";
 
@@ -429,7 +429,8 @@ exports.makePayment = async (req, res) => {
           status: order.status,
           receipt: order.receipt,
           attempts: order.attempts,
-          category: category,
+          parentSub: parentSub,
+          category: "membership",
         };
         const newPayment = await Razorpayment.create(paymentData);
         return responseHandler(
@@ -457,7 +458,7 @@ exports.razorpayCallback = async (req, res) => {
     const { razorpayPaymentId, razorpayOrderId, razorpaySignature } = req.body;
     const getDoc = await Razorpayment.findOne({
       gatewayId: razorpayOrderId,
-    });
+    }).populate("parentSub");
 
     if (getDoc) {
       const hmac = crypto.createHmac("sha256", process.env.RAZORPAY_SECRET_KEY);
@@ -465,7 +466,8 @@ exports.razorpayCallback = async (req, res) => {
       const generatedSignature = data.digest("hex");
       if (generatedSignature === razorpaySignature) {
         let expiryDate = new Date();
-        expiryDate.setDate(expiryDate.getDate() + 365);
+        const days = getDoc.parentSub?.days
+        expiryDate.setDate(expiryDate.getDate() + days);
         const fetchOrderData = await instance.orders.fetch(razorpayOrderId);
         if (fetchOrderData.status) {
           delete fetchOrderData.id;
