@@ -496,6 +496,7 @@ exports.createParentSubSchema = Joi.object({
   description: Joi.string(),
   days: Joi.number(),
   price: Joi.number(),
+  benefits: Joi.array().items(Joi.string()),
 });
 
 exports.editParentSubSchema = Joi.object({
@@ -503,6 +504,7 @@ exports.editParentSubSchema = Joi.object({
   description: Joi.string(),
   days: Joi.number(),
   price: Joi.number(),
+  benefits: Joi.array().items(Joi.string()),
 });
 
 exports.PaymentSchema = Joi.object({

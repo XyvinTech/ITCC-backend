@@ -6,6 +6,8 @@ const parentSubSchema = new mongoose.Schema(
     description: { type: String },
     days: { type: Number },
     price: { type: Number },
+    benefits: [{ type: String }],
+
   },
   { timestamps: true }
 );
