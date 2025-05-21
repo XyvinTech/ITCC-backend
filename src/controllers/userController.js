@@ -19,6 +19,7 @@ const Analytic = require("../models/analyticModel");
 const mongoose = require("mongoose");
 const Product = require("../models/productModel");
 const Enquiry = require("../models/enquiry");
+const Razorpayment = require("../models/razorpayModel");
 
 exports.sendOtp = async (req, res) => {
   try {
@@ -355,6 +356,11 @@ exports.getSingleUser = async (req, res) => {
       path: "reviewer",
       select: "name image",
     });
+    const razorpayment = await Razorpayment.find({ user: id }).populate({
+      path: "parentSub",
+      select: "name color",
+    });
+
     const mappedData = {
       ...findUser._doc,
       level,
@@ -364,6 +370,7 @@ exports.getSingleUser = async (req, res) => {
       levelId: adminDetails?.id,
       products,
       reviews,
+      razorpayment,
       freeTrialEndDate: null,
     };
 

@@ -7,7 +7,7 @@ const parentSubSchema = new mongoose.Schema(
     days: { type: Number },
     price: { type: Number },
     benefits: [{ type: String }],
-
+    color: { type: String },
   },
   { timestamps: true }
 );
