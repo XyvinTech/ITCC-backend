@@ -356,10 +356,18 @@ exports.getSingleUser = async (req, res) => {
       path: "reviewer",
       select: "name image",
     });
-    const razorpayment = await Razorpayment.find({ user: id }).populate({
+    const razorPayment = await Razorpayment.findOne({ user: id ,status:"paid"}).populate({
       path: "parentSub",
       select: "name color",
-    });
+    }).sort({ createdAt: -1 }).lean();
+    
+const parentSub= razorPayment?.parentSub
+  ? {
+      id: razorPayment.parentSub._id,
+      name: razorPayment.parentSub.name,
+      color: razorPayment.parentSub.color,
+    }
+  : null;
 
     const mappedData = {
       ...findUser._doc,
@@ -370,7 +378,7 @@ exports.getSingleUser = async (req, res) => {
       levelId: adminDetails?.id,
       products,
       reviews,
-      razorpayment,
+      parentSub,
       freeTrialEndDate: null,
     };
 
