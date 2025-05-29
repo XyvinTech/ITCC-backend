@@ -570,7 +570,22 @@ exports.fetchDashboard = async (req, res) => {
       User.countDocuments({ status: "active" }),
       User.countDocuments({ status: "inactive" }),
       User.countDocuments({
-        $and: [{ fcm: { $ne: null } }, { fcm: { $ne: "" } }],
+        $or: [
+          {
+            $and: [
+              { uid: { $exists: true } },
+              { uid: { $ne: null } },
+              { uid: { $ne: "" } },
+            ],
+          },
+          {
+            $and: [
+              { fcm: { $exists: true } },
+              { fcm: { $ne: null } },
+              { fcm: { $ne: "" } },
+            ],
+          },
+        ],
       }),
       Analytic.aggregate([
         {
@@ -739,12 +754,43 @@ exports.downloadUser = async (req, res) => {
     if (status) {
       filter.status = status;
     }
-    if (installed == "false") {
-      filter.fcm = { $in: [null, ""] };
+    if (installed === "false") {
+      filter.$and = [
+        ...(filter.$and || []),
+        {
+          $or: [{ uid: { $exists: false } }, { uid: null }, { uid: "" }],
+        },
+        {
+          $or: [{ fcm: { $exists: false } }, { fcm: null }, { fcm: "" }],
+        },
+      ];
     } else if (installed) {
-      filter.fcm = {
-        $nin: [null, ""],
-      };
+      const installedCondition = [
+        {
+          $and: [
+            { uid: { $exists: true } },
+            { uid: { $ne: null } },
+            { uid: { $ne: "" } },
+          ],
+        },
+        {
+          $and: [
+            { fcm: { $exists: true } },
+            { fcm: { $ne: null } },
+            { fcm: { $ne: "" } },
+          ],
+        },
+      ];
+      if (filter.$or) {
+        filter.$and = [
+          ...(filter.$and || []),
+          { $or: filter.$or },
+          { $or: installedCondition },
+        ];
+        delete filter.$or;
+      } else {
+        filter.$or = installedCondition;
+      }
     }
     if (name && name !== "") {
       filter.name = { $regex: name, $options: "i" };
@@ -775,8 +821,8 @@ exports.downloadUser = async (req, res) => {
         Email: item.email,
         ChapterName: item.chapter?.name,
         DateOfJoining: item.dateOfJoining
-        ? moment(item.dateOfJoining).format("DD-MM-YYYY")
-        : "",
+          ? moment(item.dateOfJoining).format("DD-MM-YYYY")
+          : "",
         Address: item.address,
         BusinessCatogary: item.businessCatogary,
         BusinessSubCatogary: item.businessSubCatogary,

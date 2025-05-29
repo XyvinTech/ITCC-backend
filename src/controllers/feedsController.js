@@ -79,18 +79,15 @@ exports.deletefeeds = async (req, res) => {
 exports.getAllFeeds = async (req, res) => {
   try {
     const { pageNo = 1, status, limit = 10 } = req.query;
-    const skipCount = 10 * (pageNo - 1);
+    const skipCount = limit * (pageNo - 1); 
     const currentUser = await User.findById(req.userId).select("blockedUsers");
-    const blockedUsersList = currentUser.blockedUsers
-      ? currentUser.blockedUsers
-      : [];
+    const blockedUsersList = currentUser.blockedUsers || [];
 
     const filter = {
       status: "published",
-      author: {
-        $nin: [...blockedUsersList],
-      },
+      author: { $nin: blockedUsersList },
     };
+
     const totalCount = await Feeds.countDocuments(filter);
     const data = await Feeds.find(filter)
       .populate({
@@ -105,7 +102,7 @@ exports.getAllFeeds = async (req, res) => {
     return responseHandler(
       res,
       200,
-      `Feeds found successfull..!`,
+      `Feeds found successfully..!`,
       data,
       totalCount
     );
@@ -113,6 +110,7 @@ exports.getAllFeeds = async (req, res) => {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
 };
+
 
 exports.getAllFeedsForAdmin = async (req, res) => {
   let Status = "failure";
