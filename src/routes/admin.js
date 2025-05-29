@@ -13,7 +13,6 @@ adminRoute
   .get(adminController.getAdmin);
 
 adminRoute.get("/list", adminController.getAllAdmins);
-
 adminRoute
   .route("/profile/:id")
   .get(adminController.fetchAdmin)
