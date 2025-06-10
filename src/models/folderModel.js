@@ -11,6 +11,7 @@ const folderSchema = mongoose.Schema(
     event: { type: mongoose.Schema.Types.ObjectId, ref: "Event" },
     thumbnail: { type: String },
     speaker: { type: String },
+    speakerImage: { type: String },
     designation: { type: String },
     description: { type: String },
     learningCorner: { type: Boolean, default: false },

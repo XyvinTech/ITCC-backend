@@ -541,6 +541,7 @@ exports.createFolderSchema = Joi.object({
   event: Joi.string().required(),
   thumbnail: Joi.string(),
   speaker: Joi.string(),
+  speakerImage: Joi.string(),
   designation: Joi.string(),
   description: Joi.string(),
   learningCorner: Joi.boolean(),
