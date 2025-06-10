@@ -290,8 +290,12 @@ exports.fetchEventFolders = async (req, res) => {
       return responseHandler(res, 404, "No folders found");
     }
     const enhancedFolders = folders?.map((folder) => {
-      const imageCount = folder.files.filter((file) => file.type === "image").length;
-      const videoCount = folder.files.filter((file) => file.type === "video").length;
+      const imageCount = folder.files.filter(
+        (file) => file.type === "image"
+      ).length;
+      const videoCount = folder.files.filter(
+        (file) => file.type === "video"
+      ).length;
       return {
         ...folder,
         imageCount,
@@ -332,8 +336,12 @@ exports.getFolderForUser = async (req, res) => {
     }
 
     const enhancedFolders = folders?.map((folder) => {
-      const imageCount = folder.files.filter((file) => file.type === "image").length;
-      const videoCount = folder.files.filter((file) => file.type === "video").length;
+      const imageCount = folder.files.filter(
+        (file) => file.type === "image"
+      ).length;
+      const videoCount = folder.files.filter(
+        (file) => file.type === "video"
+      ).length;
       return {
         ...folder,
         imageCount,
@@ -346,6 +354,30 @@ exports.getFolderForUser = async (req, res) => {
       200,
       "Folders found successfully!",
       enhancedFolders,
+      totalCount
+    );
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
+  }
+};
+
+exports.getLearningCorner = async (req, res) => {
+  try {
+    const { pageNo = 1, limit = 10 } = req.query;
+    const skipCount = (pageNo - 1) * limit;
+    const totalCount = await Folder.countDocuments({ learningCorner: true });
+    const folders = await Folder.find({ learningCorner: true })
+      .skip(skipCount)
+      .limit(Number(limit))
+      .lean();
+    if (!folders.length) {
+      return responseHandler(res, 404, "No folders found");
+    }
+    return responseHandler(
+      res,
+      200,
+      "Folders found successfully!",
+      folders,
       totalCount
     );
   } catch (error) {

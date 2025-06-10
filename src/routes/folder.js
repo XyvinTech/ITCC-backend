@@ -7,6 +7,7 @@ folderRoute.use(authVerify);
 
 folderRoute.post("/", folderController.createFolder);
 folderRoute.get("/list/:eventId", folderController.getFolderForUser);
+folderRoute.get("/learning-corner", folderController.getLearningCorner);
 folderRoute.get("/admin/list/:eventId", folderController.fetchEventFolders);
 folderRoute
   .route("/single/:id")

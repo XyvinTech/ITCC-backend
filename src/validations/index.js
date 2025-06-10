@@ -539,9 +539,19 @@ exports.createEnquirySchema = Joi.object({
 exports.createFolderSchema = Joi.object({
   name: Joi.string().required(),
   event: Joi.string().required(),
+  thumbnail: Joi.string(),
+  speaker: Joi.string(),
+  designation: Joi.string(),
+  description: Joi.string(),
+  learningCorner: Joi.boolean(),
 });
 
 exports.editFolderSchema = Joi.object({
   name: Joi.string(),
   event: Joi.string(),
+  thumbnail: Joi.string(),
+  speaker: Joi.string(),
+  designation: Joi.string(),
+  description: Joi.string(),
+  learningCorner: Joi.boolean(),
 });
