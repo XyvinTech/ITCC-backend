@@ -551,6 +551,7 @@ exports.editFolderSchema = Joi.object({
   name: Joi.string(),
   event: Joi.string(),
   thumbnail: Joi.string(),
+  speakerImage: Joi.string(),
   speaker: Joi.string(),
   designation: Joi.string(),
   description: Joi.string(),

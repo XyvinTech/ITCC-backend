@@ -1,4 +1,3 @@
-const e = require("express");
 const mongoose = require("mongoose");
 const fileSchema = new mongoose.Schema({
   type: { type: String, enum: ["image", "video"] },
